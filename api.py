@@ -35,21 +35,26 @@ class Applicant(BaseModel):
 @app.post("/predict")
 def predict(applicant: Applicant):
 
-    input_df = pd.DataFrame(columns=model_columns)
-    input_df.loc[0] = 0
+input_df = pd.DataFrame(0, index=[0], columns=model_columns)
 
-    input_df.at[0, "AMT_CREDIT"] = applicant.AMT_CREDIT
-    input_df.at[0, "AMT_GOODS_PRICE"] = applicant.AMT_GOODS_PRICE
-    input_df.at[0, "DAYS_EMPLOYED"] = applicant.DAYS_EMPLOYED
-    input_df.at[0, "EXT_SOURCE_3"] = applicant.EXT_SOURCE_3
+# Force float dtype for numeric safety
+input_df = input_df.astype(float)
 
-    income_col = f"NAME_INCOME_TYPE_{applicant.NAME_INCOME_TYPE}"
-    if income_col in input_df.columns:
-        input_df.at[0, income_col] = 1
+# Numeric fields
+input_df.loc[0, "AMT_CREDIT"] = float(applicant.AMT_CREDIT)
+input_df.loc[0, "AMT_GOODS_PRICE"] = float(applicant.AMT_GOODS_PRICE)
+input_df.loc[0, "DAYS_EMPLOYED"] = float(applicant.DAYS_EMPLOYED)
+input_df.loc[0, "EXT_SOURCE_3"] = float(applicant.EXT_SOURCE_3)
 
-    edu_col = f"NAME_EDUCATION_TYPE_{applicant.NAME_EDUCATION_TYPE}"
-    if edu_col in input_df.columns:
-        input_df.at[0, edu_col] = 1
+# Income Encoding
+income_col = f"NAME_INCOME_TYPE_{applicant.NAME_INCOME_TYPE}"
+if income_col in input_df.columns:
+    input_df.loc[0, income_col] = 1.0
+
+# Education Encoding
+edu_col = f"NAME_EDUCATION_TYPE_{applicant.NAME_EDUCATION_TYPE}"
+if edu_col in input_df.columns:
+    input_df.loc[0, edu_col] = 1.0
 
     input_scaled = scaler.transform(input_df)
     probability = model.predict_proba(input_scaled)[0][1]
@@ -65,3 +70,4 @@ def predict(applicant: Applicant):
         "default_probability": round(float(probability), 4),
         "risk_level": risk
     }
+
