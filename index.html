@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Credit Risk Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            width: 420px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #2d89ef;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #1b5fa7;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Credit Risk Prediction</h2>
+
+    <input id="credit" placeholder="Credit Amount" type="number" />
+    <input id="goods" placeholder="Goods Price" type="number" />
+    <input id="days" placeholder="Days Employed" type="number" />
+    <input id="ext" placeholder="External Score (0-1)" step="0.01" type="number" />
+
+    <select id="income">
+        <option>Working</option>
+        <option>Commercial associate</option>
+        <option>Pensioner</option>
+        <option>State servant</option>
+    </select>
+
+    <select id="education">
+        <option>Secondary / secondary special</option>
+        <option>Higher education</option>
+        <option>Incomplete higher</option>
+    </select>
+
+    <button onclick="predict()">Analyze Risk</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+async function predict() {
+    const response = await fetch('/predict', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            AMT_CREDIT: parseFloat(document.getElementById("credit").value),
+            AMT_GOODS_PRICE: parseFloat(document.getElementById("goods").value),
+            DAYS_EMPLOYED: parseFloat(document.getElementById("days").value),
+            EXT_SOURCE_3: parseFloat(document.getElementById("ext").value),
+            NAME_INCOME_TYPE: document.getElementById("income").value,
+            NAME_EDUCATION_TYPE: document.getElementById("education").value
+        })
+    });
+
+    const data = await response.json();
+    const resultDiv = document.getElementById("result");
+
+    resultDiv.innerHTML =
+        "Probability: " + data.default_probability +
+        "<br>Risk Level: " + data.risk_level;
+
+    if (data.risk_level === "Low Risk") {
+        resultDiv.style.background = "#d4edda";
+    } else if (data.risk_level === "Medium Risk") {
+        resultDiv.style.background = "#fff3cd";
+    } else {
+        resultDiv.style.background = "#f8d7da";
+    }
+}
+</script>
+
+</body>
+</html>
