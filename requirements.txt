@@ -4,5 +4,4 @@ pandas
 scikit-learn
 joblib
 numpy
-shap
-matplotlib
+jinja2
