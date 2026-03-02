@@ -1,28 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Credit Risk Prediction</title>
+    <title>AI Credit Intelligence</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
+        }
+
+        .header {
+            padding: 20px 40px;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(8px);
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            height: 100vh;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
         }
 
         .container {
-            background: white;
+            display: flex;
             padding: 40px;
-            border-radius: 12px;
-            width: 420px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            gap: 40px;
         }
 
-        h2 {
-            text-align: center;
+        .card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(12px);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            flex: 1;
+        }
+
+        .card h2 {
+            margin-top: 0;
             margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
         }
 
         input, select {
@@ -30,60 +55,126 @@
             padding: 10px;
             margin: 8px 0;
             border-radius: 6px;
-            border: 1px solid #ccc;
+            border: none;
+            outline: none;
+            background-color: #1c2b36;
+            color: white;
+        }
+
+        /* IMPORTANT FIX FOR DROPDOWN OPTIONS */
+        select option {
+            background-color: #1c2b36;
+            color: white;
         }
 
         button {
             width: 100%;
             padding: 12px;
-            background: #2d89ef;
-            color: white;
+            margin-top: 15px;
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
+            transition: 0.3s;
         }
 
         button:hover {
-            background: #1b5fa7;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #00c6ff;
         }
 
-        #result {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 6px;
-            text-align: center;
+        .risk-meter {
+            font-size: 48px;
             font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .badge {
+            text-align: center;
+            padding: 8px 20px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .low { background: #28a745; }
+        .medium { background: #ffc107; color: black; }
+        .high { background: #dc3545; }
+
+        .explanation {
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.8;
+            text-align: center;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            opacity: 0.6;
+        }
+
+        @media(max-width: 900px) {
+            .container {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 
 <body>
 
+<div class="header">
+    <h1>AI Credit Risk Intelligence Platform</h1>
+    <span>Model v1.0 | Live Deployment</span>
+</div>
+
 <div class="container">
-    <h2>Credit Risk Prediction</h2>
 
-    <input id="credit" placeholder="Credit Amount" type="number" />
-    <input id="goods" placeholder="Goods Price" type="number" />
-    <input id="days" placeholder="Days Employed" type="number" />
-    <input id="ext" placeholder="External Score (0-1)" step="0.01" type="number" />
+    <div class="card">
+        <h2>Applicant Information</h2>
 
-    <select id="income">
-        <option>Working</option>
-        <option>Commercial associate</option>
-        <option>Pensioner</option>
-        <option>State servant</option>
-    </select>
+        <input id="credit" placeholder="Credit Amount" type="number" />
+        <input id="goods" placeholder="Goods Price" type="number" />
+        <input id="days" placeholder="Days Employed" type="number" />
+        <input id="ext" placeholder="External Risk Score (0-1)" step="0.01" type="number" />
 
-    <select id="education">
-        <option>Secondary / secondary special</option>
-        <option>Higher education</option>
-        <option>Incomplete higher</option>
-    </select>
+        <select id="income">
+            <option value="Working">Working</option>
+            <option value="Commercial associate">Commercial associate</option>
+            <option value="Pensioner">Pensioner</option>
+            <option value="State servant">State servant</option>
+        </select>
 
-    <button onclick="predict()">Analyze Risk</button>
+        <select id="education">
+            <option value="Secondary / secondary special">Secondary / secondary special</option>
+            <option value="Higher education">Higher education</option>
+            <option value="Incomplete higher">Incomplete higher</option>
+        </select>
 
-    <div id="result"></div>
+        <button onclick="predict()">Run AI Analysis</button>
+    </div>
+
+    <div class="card">
+        <h2>Risk Analytics Dashboard</h2>
+
+        <div class="risk-meter" id="probability">--%</div>
+        <div id="badgeContainer" style="text-align:center;"></div>
+
+        <div class="explanation" id="explanation">
+            Awaiting analysis...
+        </div>
+    </div>
+
+</div>
+
+<div class="footer">
+    Powered by Logistic Regression | Feature Scaling | SMOTE | FastAPI
 </div>
 
 <script>
@@ -95,51 +186,44 @@ async function predict() {
     const ext = parseFloat(document.getElementById("ext").value);
 
     if (isNaN(credit) || isNaN(goods) || isNaN(days) || isNaN(ext)) {
-        alert("Please fill all numeric fields properly.");
+        alert("Please fill all numeric fields.");
         return;
     }
 
-    try {
-        const response = await fetch('/predict', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                AMT_CREDIT: credit,
-                AMT_GOODS_PRICE: goods,
-                DAYS_EMPLOYED: days,
-                EXT_SOURCE_3: ext,
-                NAME_INCOME_TYPE: document.getElementById("income").value,
-                NAME_EDUCATION_TYPE: document.getElementById("education").value
-            })
-        });
+    document.getElementById("probability").innerHTML = "Analyzing...";
+    document.getElementById("badgeContainer").innerHTML = "";
+    document.getElementById("explanation").innerHTML = "";
 
-        if (!response.ok) {
-            throw new Error("Server error");
-        }
+    const response = await fetch('/predict', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            AMT_CREDIT: credit,
+            AMT_GOODS_PRICE: goods,
+            DAYS_EMPLOYED: days,
+            EXT_SOURCE_3: ext,
+            NAME_INCOME_TYPE: document.getElementById("income").value,
+            NAME_EDUCATION_TYPE: document.getElementById("education").value
+        })
+    });
 
-        const data = await response.json();
+    const data = await response.json();
 
-        const resultDiv = document.getElementById("result");
+    const percentage = (data.default_probability * 100).toFixed(2);
+    document.getElementById("probability").innerHTML = percentage + "%";
 
-        resultDiv.innerHTML =
-            "Probability: " + data.default_probability +
-            "<br>Risk Level: " + data.risk_level;
+    let badgeClass = "";
+    if (data.risk_level === "Low Risk") badgeClass = "low";
+    else if (data.risk_level === "Medium Risk") badgeClass = "medium";
+    else badgeClass = "high";
 
-        if (data.risk_level === "Low Risk") {
-            resultDiv.style.background = "#d4edda";
-        } else if (data.risk_level === "Medium Risk") {
-            resultDiv.style.background = "#fff3cd";
-        } else {
-            resultDiv.style.background = "#f8d7da";
-        }
+    document.getElementById("badgeContainer").innerHTML =
+        `<span class="badge ${badgeClass}">${data.risk_level}</span>`;
 
-    } catch (error) {
-        document.getElementById("result").innerHTML =
-            "⚠️ Something went wrong. Please try again.";
-        document.getElementById("result").style.background = "#f8d7da";
-    }
+    document.getElementById("explanation").innerHTML =
+        "AI evaluated financial indicators and estimated credit default probability accordingly.";
 }
 </script>
-    
+
 </body>
 </html>
